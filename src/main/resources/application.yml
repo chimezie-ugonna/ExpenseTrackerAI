@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/springboot_application
+    url: jdbc:mysql://localhost:3306/expense_tracker_ai
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
