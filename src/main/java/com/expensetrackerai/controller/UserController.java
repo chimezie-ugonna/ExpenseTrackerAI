@@ -15,7 +15,18 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User registerUser(@RequestParam String email, @RequestParam String password) {
-        return userService.createUser(email, password);
+    public User registerUser(@RequestParam String fullName, @RequestParam String email, @RequestParam String password) {
+        return userService.createUser(fullName, email, password);
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@RequestParam String email, @RequestParam String password) {
+        boolean isAuthenticated = userService.authenticateUser(email, password);
+        if (isAuthenticated) {
+            User user = userService.getUserByEmail(email);
+            return user.getFullName();
+        } else {
+            return "Invalid credentials!";
+        }
     }
 }

@@ -1,9 +1,11 @@
 package com.expensetrackerai.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.Date;
 
 @Entity
+@Table(name = "expenses")
 public class Expense {
 
     @Id
