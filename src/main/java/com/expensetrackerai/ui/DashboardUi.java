@@ -10,7 +10,6 @@ import java.util.Scanner;
 @Component
 public class DashboardUi {
 
-    private AddExpenseUi addExpenseUi;
     private UserService userService;
 
     private static String getGreeting() {
@@ -24,11 +23,6 @@ public class DashboardUi {
         } else {
             return "Good night";
         }
-    }
-
-    @Autowired
-    public void setAddExpenseUi(AddExpenseUi addExpenseUi) {
-        this.addExpenseUi = addExpenseUi;
     }
 
     @Autowired
@@ -63,13 +57,13 @@ public class DashboardUi {
 
             switch (choice) {
                 case 1:
-                    addExpenseUi.start(scanner, userId);
+                    uiManager.startAddExpenseUi(userId, scanner);
                     break;
                 case 2:
                     System.out.println("View Expenses option selected.");
                     break;
                 case 3:
-                    System.out.println("Delete Expense option selected.");
+                    uiManager.startDeleteExpenseUi(userId, scanner);
                     break;
                 case 4:
                     System.out.println("AI Summary option selected.");

@@ -12,13 +12,17 @@ public class UiManager {
     private final LoginUi loginUi;
     private final RegisterUi registerUi;
     private final DashboardUi dashboardUi;
+    private final AddExpenseUi addExpenseUi;
+    private final DeleteExpenseUi deleteExpenseUi;
 
     @Autowired
-    public UiManager(MainUi mainUi, LoginUi loginUi, RegisterUi registerUi, DashboardUi dashboardUi) {
+    public UiManager(MainUi mainUi, LoginUi loginUi, RegisterUi registerUi, DashboardUi dashboardUi, AddExpenseUi addExpenseUi, DeleteExpenseUi deleteExpenseUi) {
         this.mainUi = mainUi;
         this.loginUi = loginUi;
         this.registerUi = registerUi;
         this.dashboardUi = dashboardUi;
+        this.addExpenseUi = addExpenseUi;
+        this.deleteExpenseUi = deleteExpenseUi;
     }
 
     public void startMainUi(Scanner scanner) {
@@ -35,5 +39,13 @@ public class UiManager {
 
     public void startDashboardUi(Long userId, String userFirstName, Scanner scanner) {
         dashboardUi.start(userId, userFirstName, scanner, this);
+    }
+
+    public void startAddExpenseUi(Long userId, Scanner scanner) {
+        addExpenseUi.start(scanner, userId);
+    }
+
+    public void startDeleteExpenseUi(Long userId, Scanner scanner) {
+        deleteExpenseUi.start(userId, scanner);
     }
 }
