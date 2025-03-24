@@ -1,14 +1,18 @@
 package com.expensetrackerai.ui;
 
 
+import org.springframework.stereotype.Component;
+
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+@Component
 public class LoginUi {
-    public static void start(Scanner scanner) {
+
+    public void start(Scanner scanner, UiManager uiManager) {
         while (true) {
             System.out.print("\nEnter email: ");
             String email = scanner.nextLine();
@@ -21,21 +25,31 @@ public class LoginUi {
                 continue;
             }
 
-            String fullName = logIn(email, password);
-            if (fullName != null) {
-                System.out.println("Login successful");
-                DashboardUi.start(fullName.split(" ")[0], scanner);
-                return;
+            String[] userData = logIn(email, password);
+            if (userData != null) {
+                String userId = userData[0];
+                String fullName = userData[1];
+                System.out.println("Login successful.");
+                uiManager.startDashboardUi(Long.parseLong(userId), fullName.split(" ")[0], scanner);
             } else {
-                System.out.println("Invalid credentials. Try again? (yes/no)");
-                if (!scanner.nextLine().equalsIgnoreCase("yes")) {
+                String response;
+                while (true) {
+                    System.out.print("Invalid credentials. Try again? (yes/no): ");
+                    response = scanner.nextLine().toLowerCase();
+                    if (response.equals("yes") || response.equals("no")) {
+                        break;
+                    } else {
+                        System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+                    }
+                }
+                if (response.equals("no")) {
                     return;
                 }
             }
         }
     }
 
-    private static String logIn(String email, String password) {
+    private static String[] logIn(String email, String password) {
         try {
             URL url = new URL("http://localhost:8080/api/users/login");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -54,7 +68,7 @@ public class LoginUi {
             if (responseMessage.equals("Invalid credentials!")) {
                 return null;
             } else {
-                return responseMessage.trim();
+                return responseMessage.split(",");
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());

@@ -2,7 +2,7 @@ package com.expensetrackerai.model;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "expenses")
@@ -14,19 +14,24 @@ public class Expense {
 
     private double amount;
     private String description;
-    private Date date;
+    private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private ExpenseCategory expenseCategory;
 
     public Expense() {}
 
-    public Expense(double amount, String description, Date date, User user) {
+    public Expense(double amount, String description, LocalDate date, User user, ExpenseCategory expenseCategory) {
         this.amount = amount;
         this.description = description;
         this.date = date;
         this.user = user;
+        this.expenseCategory = expenseCategory;
     }
 
     public Long getId() {
@@ -53,11 +58,11 @@ public class Expense {
         this.description = description;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -67,5 +72,23 @@ public class Expense {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public ExpenseCategory getExpenseCategory() {
+        return expenseCategory;
+    }
+
+    public void setExpenseCategory(ExpenseCategory expenseCategory) {
+        this.expenseCategory = expenseCategory;
+    }
+
+    public void setUserId(Long userId) {
+        this.user = new User();
+        this.user.setId(userId);
+    }
+
+    public void setCategoryId(Long expenseCategoryId) {
+        this.expenseCategory = new ExpenseCategory();
+        this.expenseCategory.setCategory_id(expenseCategoryId);
     }
 }

@@ -1,11 +1,12 @@
 package com.expensetrackerai.ui;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
 
+@Component
 public class MainUi {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
+    public void start(Scanner scanner, UiManager uiManager) {
         while (true) {
             System.out.println("\nWelcome to Expense Tracker AI!");
             System.out.println("1. Login");
@@ -25,10 +26,10 @@ public class MainUi {
 
             switch (choice) {
                 case 1:
-                    LoginUi.start(scanner);
+                    uiManager.startLoginUi(scanner);
                     break;
                 case 2:
-                    RegisterUi.start(scanner);
+                    uiManager.startRegisterUi(scanner);
                     break;
                 case 3:
                     System.out.println("Goodbye!");

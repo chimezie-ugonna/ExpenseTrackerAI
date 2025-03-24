@@ -1,10 +1,22 @@
 package com.expensetrackerai.ui;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalTime;
 import java.util.Scanner;
 
+@Component
 public class DashboardUi {
-    public static void start(String userFirstName, Scanner scanner) {
+
+    private AddExpenseUi addExpenseUi;
+
+    @Autowired
+    public void setAddExpenseUi(AddExpenseUi addExpenseUi) {
+        this.addExpenseUi = addExpenseUi;
+    }
+
+    public void start(Long userId, String userFirstName, Scanner scanner, UiManager uiManager) {
         while (true) {
             String greeting = getGreeting();
             System.out.println("\n" + greeting + ", " + userFirstName + "!");
@@ -13,13 +25,15 @@ public class DashboardUi {
             System.out.println("1. Add Expense");
             System.out.println("2. View Expenses");
             System.out.println("3. Delete Expense");
-            System.out.println("4. Get Summary");
-            System.out.println("5. Logout");
+            System.out.println("4. Get AI Summary");
+            System.out.println("5. Manage Expense Categories");
+            System.out.println("6. Logout");
+            System.out.println("7. Delete Account");
 
             System.out.print("Please select an option: ");
 
             if (!scanner.hasNextInt()) {
-                System.out.println("Invalid input. Please enter a number between 1 and 5.");
+                System.out.println("Invalid input. Please enter a number between 1 and 7.");
                 scanner.nextLine();
                 continue;
             }
@@ -29,22 +43,29 @@ public class DashboardUi {
 
             switch (choice) {
                 case 1:
-                    //AddExpenseUi.start(scanner);
+                    addExpenseUi.start(scanner, userId);
                     break;
                 case 2:
-                    //ViewExpensesUi.start(scanner);
+                    System.out.println("View Expenses option selected.");
                     break;
                 case 3:
-                    //DeleteExpenseUi.start(scanner);
+                    System.out.println("Delete Expense option selected.");
                     break;
                 case 4:
-                    //GetSummaryUi.start(scanner);
+                    System.out.println("AI Summary option selected.");
                     break;
                 case 5:
+                    System.out.println("Manage Expense Categories option selected.");
+                    break;
+                case 6:
                     System.out.println("Logout successful");
+                    uiManager.startMainUi(scanner);
+                    return;
+                case 7:
+                    System.out.println("Delete Account option selected.");
                     return;
                 default:
-                    System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+                    System.out.println("Invalid choice. Please enter a number between 1 and 7.");
             }
         }
     }
