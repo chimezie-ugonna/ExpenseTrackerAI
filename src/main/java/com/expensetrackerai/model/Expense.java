@@ -24,7 +24,8 @@ public class Expense {
     @JoinColumn(name = "category_id", nullable = false)
     private ExpenseCategory expenseCategory;
 
-    public Expense() {}
+    public Expense() {
+    }
 
     public Expense(double amount, String description, LocalDate date, User user, ExpenseCategory expenseCategory) {
         this.amount = amount;

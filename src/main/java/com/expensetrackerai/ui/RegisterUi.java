@@ -14,6 +14,30 @@ public class RegisterUi {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
+    private static String registerUser(String fullName, String email, String password) {
+        try {
+            URL url = new URL("http://localhost:8080/api/users/register");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+
+            String postData = "fullName=" + fullName + "&email=" + email + "&password=" + password;
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(postData.getBytes(StandardCharsets.UTF_8));
+            }
+
+            Scanner responseScanner = new Scanner(conn.getInputStream());
+            String responseMessage = responseScanner.hasNext() ? responseScanner.nextLine() : "";
+
+            return responseMessage.trim();
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
+    }
+
     public void start(Scanner scanner, UiManager uiManager) {
         while (true) {
             System.out.print("\nEnter full name: ");
@@ -62,30 +86,6 @@ public class RegisterUi {
                     return;
                 }
             }
-        }
-    }
-
-    private static String registerUser(String fullName, String email, String password) {
-        try {
-            URL url = new URL("http://localhost:8080/api/users/register");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setDoOutput(true);
-
-            String postData = "fullName=" + fullName + "&email=" + email + "&password=" + password;
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(postData.getBytes(StandardCharsets.UTF_8));
-            }
-
-            Scanner responseScanner = new Scanner(conn.getInputStream());
-            String responseMessage = responseScanner.hasNext() ? responseScanner.nextLine() : "";
-
-            return responseMessage.trim();
-
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
         }
     }
 

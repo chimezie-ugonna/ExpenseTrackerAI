@@ -36,4 +36,14 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    public boolean deleteUserAccount(Long userId) {
+        try {
+            userRepository.deleteById(userId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error while deleting user: " + e.getMessage());
+            return false;
+        }
+    }
 }

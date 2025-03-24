@@ -20,14 +20,12 @@ public class ExpenseCategoryService {
         this.userRepository = userRepository;
     }
 
-    // Get both default categories and categories specific to the user
     public List<ExpenseCategory> getCategoriesByUserId(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Fetch default categories (where user is null) and user-specific categories
         List<ExpenseCategory> categories = new ArrayList<>();
-        categories.addAll(expenseCategoryRepository.findByUser(null));  // Default categories
-        categories.addAll(expenseCategoryRepository.findByUser(user));  // User-specific categories
+        categories.addAll(expenseCategoryRepository.findByUser(null));
+        categories.addAll(expenseCategoryRepository.findByUser(user));
 
         return categories;
     }

@@ -33,4 +33,14 @@ public class UserController {
             return "Invalid credentials!";
         }
     }
+
+    @PostMapping("/delete")
+    public String deleteUser(@RequestParam Long userId) {
+        boolean isDeleted = userService.deleteUserAccount(userId);
+        if (isDeleted) {
+            return "Account deleted successfully.";
+        } else {
+            return "Failed to delete account. Please try again.";
+        }
+    }
 }

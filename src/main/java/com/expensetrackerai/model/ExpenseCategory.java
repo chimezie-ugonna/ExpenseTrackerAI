@@ -15,9 +15,10 @@ public class ExpenseCategory {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;  // This is the relation to the User entity
+    private User user;
 
-    public ExpenseCategory() {}
+    public ExpenseCategory() {
+    }
 
     public ExpenseCategory(String category_name, User user) {
         this.category_name = category_name;
