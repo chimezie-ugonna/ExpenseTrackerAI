@@ -37,13 +37,14 @@ public class AddExpenseUi {
             System.out.println((i + 1) + ". " + categories.get(i).getCategory_name());
         }
         System.out.println((categories.size() + 1) + ". Create a new category");
+        System.out.println((categories.size() + 2) + ". Go Back");
 
         int categoryChoice;
         while (true) {
             System.out.print("Please select an option: ");
             try {
                 categoryChoice = Integer.parseInt(scanner.nextLine().trim());
-                if (categoryChoice < 1 || categoryChoice > categories.size() + 1) {
+                if (categoryChoice < 1 || categoryChoice > categories.size() + 2) {
                     System.out.println("Invalid choice. Try again.");
                     continue;
                 }
@@ -56,9 +57,25 @@ public class AddExpenseUi {
         ExpenseCategory selectedCategory;
 
         if (categoryChoice == categories.size() + 1) {
-            System.out.print("Enter new category name: ");
-            String newCategoryName = scanner.nextLine().trim();
-            selectedCategory = categoryService.createExpenseCategory(userId, newCategoryName);
+            while (true) {
+                System.out.print("Enter new category name: ");
+                String newCategoryName = scanner.nextLine().trim();
+
+                if (newCategoryName.isEmpty()) {
+                    System.out.println("Category name cannot be empty. Please enter a valid name.");
+                    continue;
+                }
+
+                selectedCategory = categoryService.createExpenseCategory(userId, newCategoryName);
+                if (selectedCategory != null) {
+                    System.out.println("Category created successfully!");
+                    break;
+                } else {
+                    System.out.println("Failed to create category. Try again.");
+                }
+            }
+        } else if (categoryChoice == categories.size() + 2) {
+            return;
         } else {
             selectedCategory = categories.get(categoryChoice - 1);
         }
@@ -93,7 +110,10 @@ public class AddExpenseUi {
             }
         }
 
-        expenseService.createExpense(userId, amount, description, selectedCategory.getCategory_id(), expenseDate.toString());
-        System.out.println("Expense added successfully!");
+        if (expenseService.createExpense(userId, amount, description, selectedCategory.getCategory_id(), expenseDate.toString()) != null) {
+            System.out.println("Expense added successfully!");
+        } else {
+            System.out.println("Failed to add expense. Please try again.");
+        }
     }
 }

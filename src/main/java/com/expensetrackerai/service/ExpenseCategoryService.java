@@ -7,6 +7,7 @@ import com.expensetrackerai.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,10 +31,32 @@ public class ExpenseCategoryService {
         return categories;
     }
 
-    public ExpenseCategory createExpenseCategory(Long user_id, String category_name) {
-        ExpenseCategory expenseCategory = new ExpenseCategory();
-        expenseCategory.setUserId(user_id);
-        expenseCategory.setCategory_name(category_name);
-        return expenseCategoryRepository.save(expenseCategory);
+    public ExpenseCategory createExpenseCategory(Long userId, String categoryName) {
+        try {
+            ExpenseCategory expenseCategory = new ExpenseCategory();
+            expenseCategory.setUserId(userId);
+            expenseCategory.setCategory_name(categoryName);
+            return expenseCategoryRepository.save(expenseCategory);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<ExpenseCategory> getCustomCategoriesByUserId(Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        return expenseCategoryRepository.findByUser(user);
+    }
+
+    public boolean deleteExpenseCategory(Long categoryId) {
+        try {
+            expenseCategoryRepository.deleteById(categoryId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error while deleting expense category: " + e.getMessage());
+            return false;
+        }
     }
 }

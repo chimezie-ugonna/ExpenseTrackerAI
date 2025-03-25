@@ -13,15 +13,19 @@ public class UiManager {
     private final RegisterUi registerUi;
     private final DashboardUi dashboardUi;
     private final AddExpenseUi addExpenseUi;
+    private final ViewExpensesUi viewExpensesUi;
+    private final ManageExpenseCategoriesUi manageExpenseCategoriesUi;
     private final DeleteExpenseUi deleteExpenseUi;
 
     @Autowired
-    public UiManager(MainUi mainUi, LoginUi loginUi, RegisterUi registerUi, DashboardUi dashboardUi, AddExpenseUi addExpenseUi, DeleteExpenseUi deleteExpenseUi) {
+    public UiManager(MainUi mainUi, LoginUi loginUi, RegisterUi registerUi, DashboardUi dashboardUi, AddExpenseUi addExpenseUi, ViewExpensesUi viewExpensesUi, ManageExpenseCategoriesUi manageExpenseCategoriesUi, DeleteExpenseUi deleteExpenseUi) {
         this.mainUi = mainUi;
         this.loginUi = loginUi;
         this.registerUi = registerUi;
         this.dashboardUi = dashboardUi;
         this.addExpenseUi = addExpenseUi;
+        this.viewExpensesUi = viewExpensesUi;
+        this.manageExpenseCategoriesUi = manageExpenseCategoriesUi;
         this.deleteExpenseUi = deleteExpenseUi;
     }
 
@@ -43,6 +47,14 @@ public class UiManager {
 
     public void startAddExpenseUi(Long userId, Scanner scanner) {
         addExpenseUi.start(scanner, userId);
+    }
+
+    public void startViewExpensesUi(Long userId, Scanner scanner) {
+        viewExpensesUi.start(scanner, userId);
+    }
+
+    public void startManageExpenseCategoriesUi(Long userId, Scanner scanner) {
+        manageExpenseCategoriesUi.start(scanner, userId);
     }
 
     public void startDeleteExpenseUi(Long userId, Scanner scanner) {

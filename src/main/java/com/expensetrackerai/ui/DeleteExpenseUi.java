@@ -31,12 +31,16 @@ public class DeleteExpenseUi {
         for (int i = 0; i < expenses.size(); i++) {
             System.out.println((i + 1) + ". " + expenses.get(i).getDescription() + " - €" + expenses.get(i).getAmount());
         }
+        System.out.println((expenses.size() + 1) + ". Go Back");
 
         int expenseIndex;
         while (true) {
             System.out.print("Please select an option: ");
             try {
                 expenseIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                if (expenseIndex == expenses.size()) {
+                    return;
+                }
                 if (expenseIndex < 0 || expenseIndex >= expenses.size()) {
                     System.out.println("Invalid choice. Try again.");
                     continue;
