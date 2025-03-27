@@ -2,6 +2,7 @@ package com.expensetrackerai.ui;
 
 import com.expensetrackerai.model.Expense;
 import com.expensetrackerai.service.ExpenseService;
+import com.expensetrackerai.util.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,8 +10,9 @@ import java.util.List;
 import java.util.Scanner;
 
 @Component
-public class DeleteExpenseUi {
+public class DeleteExpenseUi implements UiComponent {
 
+    private static final String BASE_URL = "http://localhost:8080/api/expenses";
     private final ExpenseService expenseService;
 
     @Autowired
@@ -18,10 +20,22 @@ public class DeleteExpenseUi {
         this.expenseService = expenseService;
     }
 
+    @Override
+    public void start(Scanner scanner, UiManager uiManager) {
+
+    }
+
+    @Override
     public void start(Long userId, Scanner scanner) {
         System.out.println("\n--- Delete Expense ---");
 
-        List<Expense> expenses = expenseService.getExpensesByUserId(userId);
+        String expensesJsonResponse = HttpClient.makeGetRequest(BASE_URL + "/read/" + userId);
+        if (expensesJsonResponse == null || expensesJsonResponse.isEmpty()) {
+            System.out.println("No expenses found to delete.");
+            return;
+        }
+
+        List<Expense> expenses = expenseService.parseExpensesResponse(expensesJsonResponse);
         if (expenses.isEmpty()) {
             System.out.println("No expenses found to delete.");
             return;
@@ -29,7 +43,8 @@ public class DeleteExpenseUi {
 
         System.out.println("Select an expense to delete:");
         for (int i = 0; i < expenses.size(); i++) {
-            System.out.println((i + 1) + ". " + expenses.get(i).getDescription() + " - €" + expenses.get(i).getAmount());
+            Expense expense = expenses.get(i);
+            System.out.println((i + 1) + ". " + expense.getAmount() + " EUR | " + expense.getExpenseCategory().getName() + " | " + expense.getDescription() + " | " + expense.getDate());
         }
         System.out.println((expenses.size() + 1) + ". Go Back");
 
@@ -57,12 +72,11 @@ public class DeleteExpenseUi {
         String confirmation = getConfirmation(scanner);
 
         if (confirmation.equals("yes")) {
-            boolean deletionSuccess = expenseService.deleteExpense(expenseToDelete.getId());
-
-            if (deletionSuccess) {
+            String deleteResponse = HttpClient.makeDeleteRequest(BASE_URL + "/delete/" + expenseToDelete.getId());
+            if (deleteResponse != null && deleteResponse.contains("Expense deleted successfully")) {
                 System.out.println("Expense deleted successfully.");
             } else {
-                System.out.println("Expense deletion failed.");
+                System.out.println("Expense deletion failed. Try again? (yes/no): ");
                 String retryResponse = getConfirmation(scanner);
 
                 if (retryResponse.equals("yes")) {
@@ -74,6 +88,11 @@ public class DeleteExpenseUi {
         } else {
             System.out.println("Expense deletion canceled.");
         }
+    }
+
+    @Override
+    public void start(Long userId, String userFirstName, Scanner scanner, UiManager uiManager) {
+
     }
 
     private String getConfirmation(Scanner scanner) {

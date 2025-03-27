@@ -1,8 +1,10 @@
 package com.expensetrackerai.ui;
 
 import com.expensetrackerai.model.ExpenseCategory;
+import com.expensetrackerai.model.User;
 import com.expensetrackerai.service.ExpenseCategoryService;
-import com.expensetrackerai.service.ExpenseService;
+import com.expensetrackerai.util.HttpClient;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,20 +15,27 @@ import java.util.List;
 import java.util.Scanner;
 
 @Component
-public class AddExpenseUi {
-    private final ExpenseCategoryService categoryService;
-    private final ExpenseService expenseService;
+public class AddExpenseUi implements UiComponent {
+
+    private static final String BASE_URL = "http://localhost:8080/api/categories";
+    private final ExpenseCategoryService expenseCategoryService;
 
     @Autowired
-    public AddExpenseUi(ExpenseCategoryService categoryService, ExpenseService expenseService) {
-        this.categoryService = categoryService;
-        this.expenseService = expenseService;
+    public AddExpenseUi(ExpenseCategoryService expenseCategoryService) {
+        this.expenseCategoryService = expenseCategoryService;
     }
 
-    public void start(Scanner scanner, Long userId) {
+    @Override
+    public void start(Long userId, Scanner scanner) {
         System.out.println("\n--- Add Expense ---");
 
-        List<ExpenseCategory> categories = categoryService.getCategoriesByUserId(userId);
+        String categoriesJsonResponse = HttpClient.makeGetRequest(BASE_URL + "/read/" + userId);
+        if (categoriesJsonResponse == null || categoriesJsonResponse.isEmpty()) {
+            System.out.println("No categories found. Please create one first.");
+            return;
+        }
+
+        List<ExpenseCategory> categories = expenseCategoryService.parseCategoriesResponse(categoriesJsonResponse);
         if (categories.isEmpty()) {
             System.out.println("No categories found. Please create one first.");
             return;
@@ -34,7 +43,7 @@ public class AddExpenseUi {
 
         System.out.println("Select a category:");
         for (int i = 0; i < categories.size(); i++) {
-            System.out.println((i + 1) + ". " + categories.get(i).getCategory_name());
+            System.out.println((i + 1) + ". " + categories.get(i).getName());
         }
         System.out.println((categories.size() + 1) + ". Create a new category");
         System.out.println((categories.size() + 2) + ". Go Back");
@@ -66,9 +75,13 @@ public class AddExpenseUi {
                     continue;
                 }
 
-                selectedCategory = categoryService.createExpenseCategory(userId, newCategoryName);
-                if (selectedCategory != null) {
+                String createCategoryResponse = HttpClient.makePostRequest(BASE_URL + "/create", "user_id=" + userId + "&name=" + newCategoryName);
+                if (createCategoryResponse != null) {
                     System.out.println("Category created successfully!");
+                    JSONObject categoryJson = new JSONObject(createCategoryResponse);
+                    long categoryId = categoryJson.getLong("id");
+                    String categoryName = categoryJson.optString("name");
+                    selectedCategory = new ExpenseCategory(categoryId, categoryName, new User());
                     break;
                 } else {
                     System.out.println("Failed to create category. Try again.");
@@ -110,10 +123,21 @@ public class AddExpenseUi {
             }
         }
 
-        if (expenseService.createExpense(userId, amount, description, selectedCategory.getCategory_id(), expenseDate.toString()) != null) {
+        String createExpenseResponse = HttpClient.makePostRequest("http://localhost:8080/api/expenses" + "/create", "user_id=" + userId + "&amount=" + amount + "&description=" + description + "&category_id=" + selectedCategory.getId() + "&date=" + expenseDate);
+        if (createExpenseResponse != null) {
             System.out.println("Expense added successfully!");
         } else {
             System.out.println("Failed to add expense. Please try again.");
         }
+    }
+
+    @Override
+    public void start(Long userId, String userFirstName, Scanner scanner, UiManager uiManager) {
+
+    }
+
+    @Override
+    public void start(Scanner scanner, UiManager uiManager) {
+
     }
 }

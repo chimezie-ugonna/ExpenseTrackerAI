@@ -7,15 +7,11 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 @Component
-public class RegisterUi {
+public class RegisterUi implements UiComponent {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
-    private static String registerUser(String fullName, String email, String password) {
-        String postData = "fullName=" + fullName + "&email=" + email + "&password=" + password;
-        return HttpClient.makePostRequest("http://localhost:8080/api/users/register", postData);
-    }
-
+    @Override
     public void start(Scanner scanner, UiManager uiManager) {
         while (true) {
             System.out.print("\nEnter full name: ");
@@ -45,7 +41,7 @@ public class RegisterUi {
                 continue;
             }
 
-            String userId = registerUser(fullName, email, password);
+            String userId = HttpClient.makePostRequest("http://localhost:8080/api/users/register", "fullName=" + fullName + "&email=" + email + "&password=" + password);
             if (userId != null) {
                 System.out.println("Registration successful");
                 uiManager.startDashboardUi(Long.parseLong(userId), fullName.split(" ")[0], scanner);
@@ -65,6 +61,16 @@ public class RegisterUi {
                 }
             }
         }
+    }
+
+    @Override
+    public void start(Long userId, Scanner scanner) {
+
+    }
+
+    @Override
+    public void start(Long userId, String userFirstName, Scanner scanner, UiManager uiManager) {
+
     }
 
     private boolean isValidFullName(String fullName) {

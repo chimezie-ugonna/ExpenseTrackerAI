@@ -5,7 +5,8 @@ import org.springframework.stereotype.Component;
 import java.util.Scanner;
 
 @Component
-public class MainUi {
+public class MainUi implements UiComponent {
+    @Override
     public void start(Scanner scanner, UiManager uiManager) {
         while (true) {
             System.out.println("\nWelcome to Expense Tracker AI!");
@@ -39,5 +40,15 @@ public class MainUi {
                     System.out.println("Invalid choice. Please enter 1, 2, or 3.");
             }
         }
+    }
+
+    @Override
+    public void start(Long userId, Scanner scanner) {
+
+    }
+
+    @Override
+    public void start(Long userId, String userFirstName, Scanner scanner, UiManager uiManager) {
+
     }
 }

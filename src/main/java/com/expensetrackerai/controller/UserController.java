@@ -2,10 +2,8 @@ package com.expensetrackerai.controller;
 
 import com.expensetrackerai.model.User;
 import com.expensetrackerai.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,29 +16,44 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam String fullName, @RequestParam String email, @RequestParam String password) {
-        User newUser = userService.createUser(fullName, email, password);
-        return newUser.getId().toString();
-    }
-
-    @PostMapping("/login")
-    public String loginUser(@RequestParam String email, @RequestParam String password) {
-        boolean isAuthenticated = userService.authenticateUser(email, password);
-        if (isAuthenticated) {
-            User user = userService.getUserByEmail(email);
-            return user.getId() + "," + user.getFullName();
-        } else {
-            return "Invalid credentials!";
+    public ResponseEntity<?> registerUser(@RequestParam String fullName, @RequestParam String email, @RequestParam String password) {
+        try {
+            User newUser = userService.createUser(fullName, email, password);
+            return ResponseEntity.ok(newUser.getId());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
-    @PostMapping("/delete")
-    public String deleteUser(@RequestParam Long userId) {
-        boolean isDeleted = userService.deleteUserAccount(userId);
-        if (isDeleted) {
-            return "Account deleted successfully.";
-        } else {
-            return "Failed to delete account. Please try again.";
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
+        try {
+            if (userService.authenticateUser(email, password)) {
+                User user = userService.getUserByEmail(email);
+                if (user != null) {
+                    return ResponseEntity.ok(user.getId() + "," + user.getFullName());
+                } else {
+                    return ResponseEntity.status(401).body("Invalid credentials!");
+                }
+            } else {
+                return ResponseEntity.status(401).body("Invalid credentials!");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser(@RequestParam Long userId) {
+        try {
+            boolean deletionSuccess = userService.deleteUserAccount(userId);
+            if (deletionSuccess) {
+                return ResponseEntity.ok("Account deleted successfully.");
+            } else {
+                return ResponseEntity.status(400).body("Error: Account deletion failed.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 }

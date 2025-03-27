@@ -14,19 +14,21 @@ public class UiManager {
     private final DashboardUi dashboardUi;
     private final AddExpenseUi addExpenseUi;
     private final ViewExpensesUi viewExpensesUi;
+    private final UpdateExpenseUi updateExpensesUi;
     private final ManageExpenseCategoriesUi manageExpenseCategoriesUi;
     private final DeleteExpenseUi deleteExpenseUi;
 
     @Autowired
-    public UiManager(MainUi mainUi, LoginUi loginUi, RegisterUi registerUi, DashboardUi dashboardUi, AddExpenseUi addExpenseUi, ViewExpensesUi viewExpensesUi, ManageExpenseCategoriesUi manageExpenseCategoriesUi, DeleteExpenseUi deleteExpenseUi) {
+    public UiManager(MainUi mainUi, LoginUi loginUi, RegisterUi registerUi, DashboardUi dashboardUi, AddExpenseUi addExpenseUi, ViewExpensesUi viewExpensesUi, UpdateExpenseUi updateExpensesUi, ManageExpenseCategoriesUi manageExpenseCategoriesUi, DeleteExpenseUi deleteExpenseUi) {
         this.mainUi = mainUi;
         this.loginUi = loginUi;
         this.registerUi = registerUi;
         this.dashboardUi = dashboardUi;
         this.addExpenseUi = addExpenseUi;
         this.viewExpensesUi = viewExpensesUi;
-        this.manageExpenseCategoriesUi = manageExpenseCategoriesUi;
+        this.updateExpensesUi = updateExpensesUi;
         this.deleteExpenseUi = deleteExpenseUi;
+        this.manageExpenseCategoriesUi = manageExpenseCategoriesUi;
     }
 
     public void startMainUi(Scanner scanner) {
@@ -46,18 +48,22 @@ public class UiManager {
     }
 
     public void startAddExpenseUi(Long userId, Scanner scanner) {
-        addExpenseUi.start(scanner, userId);
+        addExpenseUi.start(userId, scanner);
     }
 
     public void startViewExpensesUi(Long userId, Scanner scanner) {
-        viewExpensesUi.start(scanner, userId);
+        viewExpensesUi.start(userId, scanner);
     }
 
-    public void startManageExpenseCategoriesUi(Long userId, Scanner scanner) {
-        manageExpenseCategoriesUi.start(scanner, userId);
+    public void startUpdateExpenseUi(Long userId, Scanner scanner) {
+        updateExpensesUi.start(userId, scanner);
     }
 
     public void startDeleteExpenseUi(Long userId, Scanner scanner) {
         deleteExpenseUi.start(userId, scanner);
+    }
+
+    public void startManageExpenseCategoriesUi(Long userId, Scanner scanner) {
+        manageExpenseCategoriesUi.start(userId, scanner);
     }
 }

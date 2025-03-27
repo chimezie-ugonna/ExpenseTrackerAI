@@ -8,10 +8,10 @@ public class ExpenseCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long category_id;
+    private Long id;
 
-    @Column(name = "category_name")
-    private String category_name;
+    @Column(name = "name")
+    private String name;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -20,25 +20,26 @@ public class ExpenseCategory {
     public ExpenseCategory() {
     }
 
-    public ExpenseCategory(String category_name, User user) {
-        this.category_name = category_name;
+    public ExpenseCategory(Long id, String name, User user) {
+        this.id = id;
+        this.name = name;
         this.user = user;
     }
 
-    public Long getCategory_id() {
-        return category_id;
+    public Long getId() {
+        return id;
     }
 
-    public void setCategory_id(Long category_id) {
-        this.category_id = category_id;
+    public void setId(Long category_id) {
+        this.id = category_id;
     }
 
-    public String getCategory_name() {
-        return category_name;
+    public String getName() {
+        return name;
     }
 
-    public void setCategory_name(String category_name) {
-        this.category_name = category_name;
+    public void setName(String category_name) {
+        this.name = category_name;
     }
 
     public User getUser() {

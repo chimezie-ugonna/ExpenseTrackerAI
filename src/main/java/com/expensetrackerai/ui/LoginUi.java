@@ -1,44 +1,24 @@
 package com.expensetrackerai.ui;
 
 
+import com.expensetrackerai.util.HttpClient;
 import org.springframework.stereotype.Component;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 @Component
-public class LoginUi {
+public class LoginUi implements UiComponent {
 
     private static String[] logIn(String email, String password) {
-        try {
-            URL url = new URL("http://localhost:8080/api/users/login");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setDoOutput(true);
-
-            String postData = "email=" + email + "&password=" + password;
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(postData.getBytes(StandardCharsets.UTF_8));
-            }
-
-            Scanner responseScanner = new Scanner(conn.getInputStream());
-            String responseMessage = responseScanner.hasNext() ? responseScanner.nextLine() : "";
-
-            if (responseMessage.equals("Invalid credentials!")) {
-                return null;
-            } else {
-                return responseMessage.split(",");
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        String responseMessage = HttpClient.makePostRequest("http://localhost:8080/api/users/login", "email=" + email + "&password=" + password);
+        if (responseMessage == null || responseMessage.equals("Invalid credentials!")) {
             return null;
+        } else {
+            return responseMessage.split(",");
         }
     }
 
+    @Override
     public void start(Scanner scanner, UiManager uiManager) {
         while (true) {
             System.out.print("\nEnter email: ");
@@ -74,5 +54,15 @@ public class LoginUi {
                 }
             }
         }
+    }
+
+    @Override
+    public void start(Long userId, Scanner scanner) {
+
+    }
+
+    @Override
+    public void start(Long userId, String userFirstName, Scanner scanner, UiManager uiManager) {
+
     }
 }

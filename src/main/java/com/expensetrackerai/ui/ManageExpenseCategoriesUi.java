@@ -2,22 +2,28 @@ package com.expensetrackerai.ui;
 
 import com.expensetrackerai.model.ExpenseCategory;
 import com.expensetrackerai.service.ExpenseCategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.expensetrackerai.util.HttpClient;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Scanner;
 
 @Component
-public class ManageExpenseCategoriesUi {
-    private final ExpenseCategoryService categoryService;
+public class ManageExpenseCategoriesUi implements UiComponent {
+    private static final String BASE_URL = "http://localhost:8080/api/categories";
+    private final ExpenseCategoryService expenseCategoryService;
 
-    @Autowired
-    public ManageExpenseCategoriesUi(ExpenseCategoryService categoryService) {
-        this.categoryService = categoryService;
+    public ManageExpenseCategoriesUi(ExpenseCategoryService expenseCategoryService) {
+        this.expenseCategoryService = expenseCategoryService;
     }
 
-    public void start(Scanner scanner, Long userId) {
+    @Override
+    public void start(Scanner scanner, UiManager uiManager) {
+
+    }
+
+    @Override
+    public void start(Long userId, Scanner scanner) {
         while (true) {
             System.out.println("\n--- Manage Expense Categories ---");
             System.out.println("1. Add a Custom Expense Category");
@@ -45,6 +51,11 @@ public class ManageExpenseCategoriesUi {
         }
     }
 
+    @Override
+    public void start(Long userId, String userFirstName, Scanner scanner, UiManager uiManager) {
+
+    }
+
     private void addExpenseCategory(Scanner scanner, Long userId) {
         while (true) {
             System.out.print("Enter new category name: ");
@@ -53,51 +64,62 @@ public class ManageExpenseCategoriesUi {
                 System.out.println("Category name cannot be empty.");
                 continue;
             }
-
-            try {
-                categoryService.createExpenseCategory(userId, newCategoryName);
+            String addCategoryResponse = HttpClient.makePostRequest(BASE_URL + "/create", "user_id=" + userId + "&name=" + newCategoryName);
+            if (addCategoryResponse != null) {
                 System.out.println("Category added successfully!");
                 break;
-            } catch (Exception e) {
-                System.out.println("Failed to add category: " + e.getMessage());
+            } else {
+                System.out.println("Failed to add category. Try again.");
             }
         }
     }
 
     private void viewCustomCategories(Long userId) {
-        List<ExpenseCategory> categories = categoryService.getCustomCategoriesByUserId(userId);
+        String categoriesJsonResponse = HttpClient.makeGetRequest(BASE_URL + "/read/custom/" + userId);
+        if (categoriesJsonResponse == null || categoriesJsonResponse.isEmpty()) {
+            System.out.println("No custom categories found.");
+            return;
+        }
+
+        List<ExpenseCategory> categories = expenseCategoryService.parseCategoriesResponse(categoriesJsonResponse);
         if (categories.isEmpty()) {
             System.out.println("No custom categories found.");
             return;
         }
+
         System.out.println("\nYour Custom Expense Categories:");
         for (int i = 0; i < categories.size(); i++) {
-            System.out.println((i + 1) + ". " + categories.get(i).getCategory_name());
+            System.out.println((i + 1) + ". " + categories.get(i).getName());
         }
     }
 
     private void deleteExpenseCategory(Scanner scanner, Long userId) {
-        mainLoop:
         while (true) {
-            List<ExpenseCategory> categories = categoryService.getCustomCategoriesByUserId(userId);
+            String categoriesJsonResponse = HttpClient.makeGetRequest(BASE_URL + "/read/custom/" + userId);
+            if (categoriesJsonResponse == null || categoriesJsonResponse.isEmpty()) {
+                System.out.println("No custom categories to delete.");
+                return;
+            }
+
+            List<ExpenseCategory> categories = expenseCategoryService.parseCategoriesResponse(categoriesJsonResponse);
             if (categories.isEmpty()) {
-                System.out.println("No custom categories available to delete.");
+                System.out.println("No custom categories to delete.");
                 return;
             }
 
             System.out.println("\nSelect a category to delete:");
             for (int i = 0; i < categories.size(); i++) {
-                System.out.println((i + 1) + ". " + categories.get(i).getCategory_name());
+                System.out.println((i + 1) + ". " + categories.get(i).getName());
             }
-            System.out.print("Please select an option: ");
 
             int choice;
             while (true) {
+                System.out.print("Please select an option: ");
                 try {
                     choice = Integer.parseInt(scanner.nextLine().trim());
                     if (choice < 1 || choice > categories.size()) {
                         System.out.println("Invalid choice. Try again.");
-                        continue mainLoop;
+                        continue;
                     }
                     break;
                 } catch (NumberFormatException e) {
@@ -106,15 +128,18 @@ public class ManageExpenseCategoriesUi {
             }
 
             ExpenseCategory categoryToDelete = categories.get(choice - 1);
-            try {
-                if (categoryService.deleteExpenseCategory(categoryToDelete.getCategory_id())) {
-                    System.out.println("Category deleted successfully!");
+            String deleteResponse = HttpClient.makeDeleteRequest(BASE_URL + "/delete/" + categoryToDelete.getId());
+            if (deleteResponse != null) {
+                if (deleteResponse.contains("Category deleted successfully")) {
+                    System.out.println("Category deleted successfully.");
                     return;
+                } else if (deleteResponse.contains("Cannot delete category")) {
+                    System.out.println("Category cannot be deleted because it has associated expenses. Delete those expenses first.");
                 } else {
-                    System.out.println("Failed to delete category: " + categoryToDelete.getCategory_name());
+                    System.out.println("Category deletion failed: " + deleteResponse);
                 }
-            } catch (Exception e) {
-                System.out.println("Failed to delete category: " + e.getMessage());
+            } else {
+                System.out.println("Failed to delete category. Server did not respond.");
             }
 
             while (true) {

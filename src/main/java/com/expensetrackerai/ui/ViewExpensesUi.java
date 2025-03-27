@@ -2,6 +2,7 @@ package com.expensetrackerai.ui;
 
 import com.expensetrackerai.model.Expense;
 import com.expensetrackerai.service.ExpenseService;
+import com.expensetrackerai.util.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @Component
-public class ViewExpensesUi {
+public class ViewExpensesUi implements UiComponent {
 
     private final ExpenseService expenseService;
 
@@ -19,13 +20,25 @@ public class ViewExpensesUi {
         this.expenseService = expenseService;
     }
 
-    public void start(Scanner scanner, Long userId) {
+    @Override
+    public void start(Scanner scanner, UiManager uiManager) {
+
+    }
+
+    @Override
+    public void start(Long userId, Scanner scanner) {
         while (true) {
             System.out.println("\n--- View Expenses ---");
 
-            List<Expense> expenses = expenseService.getExpensesByUserId(userId);
+            String expensesJsonResponse = HttpClient.makeGetRequest("http://localhost:8080/api/expenses" + "/read/" + userId);
+            if (expensesJsonResponse == null || expensesJsonResponse.isEmpty()) {
+                System.out.println("No expenses found to delete.");
+                return;
+            }
+
+            List<Expense> expenses = expenseService.parseExpensesResponse(expensesJsonResponse);
             if (expenses.isEmpty()) {
-                System.out.println("No expenses found for this user.");
+                System.out.println("No expenses found to delete.");
                 return;
             }
 
@@ -74,6 +87,11 @@ public class ViewExpensesUi {
         }
     }
 
+    @Override
+    public void start(Long userId, String userFirstName, Scanner scanner, UiManager uiManager) {
+
+    }
+
     private int getValidChoice(Scanner scanner) {
         int choice;
         while (true) {
@@ -95,7 +113,7 @@ public class ViewExpensesUi {
         System.out.println("\n--- Your Expenses ---");
         for (int i = 0; i < expenses.size(); i++) {
             Expense expense = expenses.get(i);
-            System.out.println((i + 1) + ". " + expense.getAmount() + " EUR | " + expense.getExpenseCategory().getCategory_name() + " | " + expense.getDescription() + " | " + expense.getDate());
+            System.out.println((i + 1) + ". " + expense.getAmount() + " EUR | " + expense.getExpenseCategory().getName() + " | " + expense.getDescription() + " | " + expense.getDate());
         }
     }
 }

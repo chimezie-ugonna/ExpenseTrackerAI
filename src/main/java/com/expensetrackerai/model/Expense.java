@@ -27,7 +27,8 @@ public class Expense {
     public Expense() {
     }
 
-    public Expense(double amount, String description, LocalDate date, User user, ExpenseCategory expenseCategory) {
+    public Expense(Long id, double amount, String description, LocalDate date, User user, ExpenseCategory expenseCategory) {
+        this.id = id;
         this.amount = amount;
         this.description = description;
         this.date = date;
@@ -37,10 +38,6 @@ public class Expense {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public double getAmount() {
@@ -90,6 +87,16 @@ public class Expense {
 
     public void setCategoryId(Long expenseCategoryId) {
         this.expenseCategory = new ExpenseCategory();
-        this.expenseCategory.setCategory_id(expenseCategoryId);
+        this.expenseCategory.setId(expenseCategoryId);
+    }
+
+    public String toJsonString() {
+        return "{"
+                + "\"id\":" + this.getId() + ","
+                + "\"categoryId\":" + this.getExpenseCategory().getId() + ","
+                + "\"amount\":" + this.getAmount() + ","
+                + "\"description\":\"" + this.getDescription() + "\","
+                + "\"date\":\"" + this.getDate() + "\""
+                + "}";
     }
 }
