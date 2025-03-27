@@ -2,6 +2,7 @@ package com.expensetrackerai.controller;
 
 import com.expensetrackerai.model.ExpenseCategory;
 import com.expensetrackerai.service.ExpenseCategoryService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

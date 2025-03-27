@@ -87,8 +87,6 @@ public class ExpenseCategoryService {
         try {
             expenseCategoryRepository.deleteById(categoryId);
             return true;
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Cannot delete category due to existing expenses. Please delete them first.");
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage());
         }

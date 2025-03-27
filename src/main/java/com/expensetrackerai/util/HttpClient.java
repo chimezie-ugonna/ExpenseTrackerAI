@@ -36,7 +36,8 @@ public class HttpClient {
             } else {
                 try (Scanner errorScanner = new Scanner(connection.getErrorStream())) {
                     String errorMessage = errorScanner.hasNext() ? errorScanner.nextLine() : "Error occurred";
-                    return "Error: " + errorMessage;
+                    logger.severe("An error occurred: " + errorMessage);
+                    return null;
                 }
             }
         } catch (IOException e) {
@@ -73,7 +74,8 @@ public class HttpClient {
                     while (errorScanner.hasNextLine()) {
                         errorMessage.append(errorScanner.nextLine()).append("\n");
                     }
-                    return "Error: " + errorMessage;
+                    logger.severe("An error occurred: " + errorMessage);
+                    return null;
                 }
             }
         } catch (IOException e) {
@@ -115,7 +117,8 @@ public class HttpClient {
                     while ((errorLine = br.readLine()) != null) {
                         errorMessage.append(errorLine.trim());
                     }
-                    return "Error: " + errorMessage;
+                    logger.severe("An error occurred: " + errorMessage);
+                    return null;
                 }
             }
         } catch (Exception e) {
@@ -139,7 +142,8 @@ public class HttpClient {
             } else {
                 try (Scanner errorScanner = new Scanner(connection.getErrorStream())) {
                     String errorMessage = errorScanner.hasNext() ? errorScanner.nextLine() : "Error occurred";
-                    return "Error: " + errorMessage;
+                    logger.severe("An error occurred: " + errorMessage);
+                    return null;
                 }
             }
         } catch (IOException e) {
@@ -163,7 +167,8 @@ public class HttpClient {
             } else {
                 try (Scanner errorScanner = new Scanner(connection.getErrorStream())) {
                     String errorMessage = errorScanner.hasNext() ? errorScanner.nextLine() : "Error occurred";
-                    return "Error: " + errorMessage;
+                    logger.severe("An error occurred: " + errorMessage);
+                    return null;
                 }
             }
         } catch (IOException e) {
@@ -202,7 +207,8 @@ public class HttpClient {
                     while ((errorLine = br.readLine()) != null) {
                         errorMessage.append(errorLine.trim());
                     }
-                    return "Error: " + errorMessage;
+                    logger.severe("An error occurred: " + errorMessage);
+                    return null;
                 }
             }
         } catch (IOException e) {

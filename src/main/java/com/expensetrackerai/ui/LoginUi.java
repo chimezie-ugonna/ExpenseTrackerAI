@@ -11,7 +11,8 @@ public class LoginUi implements UiComponent {
 
     private static String[] logIn(String email, String password) {
         String responseMessage = HttpClient.makePostRequest("http://localhost:8080/api/users/login", "email=" + email + "&password=" + password);
-        if (responseMessage == null || responseMessage.equals("Invalid credentials!")) {
+        System.out.println(responseMessage);
+        if (responseMessage == null || responseMessage.contains("Invalid credentials!")) {
             return null;
         } else {
             return responseMessage.split(",");

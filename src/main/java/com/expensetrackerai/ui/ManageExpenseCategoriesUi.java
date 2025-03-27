@@ -139,7 +139,7 @@ public class ManageExpenseCategoriesUi implements UiComponent {
                     System.out.println("Category deletion failed: " + deleteResponse);
                 }
             } else {
-                System.out.println("Failed to delete category. Server did not respond.");
+                System.out.println("Failed to delete category. It may be due to linked expenses that need to be deleted first or a server issue. Please confirm and try again.");
             }
 
             while (true) {

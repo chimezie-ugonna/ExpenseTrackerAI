@@ -88,6 +88,8 @@ public class DashboardUi implements UiComponent {
                     String aiSummaryResponse = HttpClient.makePostRequest2("http://localhost:8080/api/expenses/aiSummary/" + userId, "");
                     if (aiSummaryResponse != null && !aiSummaryResponse.isEmpty()) {
                         printWithTypingEffect("\n" + aiSummaryResponse, 15);
+                    } else {
+                        System.out.println("Failed to retrieve AI summary.");
                     }
                     break;
                 case 6:
