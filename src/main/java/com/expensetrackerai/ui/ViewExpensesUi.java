@@ -32,13 +32,13 @@ public class ViewExpensesUi implements UiComponent {
 
             String expensesJsonResponse = HttpClient.makeGetRequest("http://localhost:8080/api/expenses" + "/read/" + userId);
             if (expensesJsonResponse == null || expensesJsonResponse.isEmpty()) {
-                System.out.println("No expenses found to delete.");
+                System.out.println("No expenses found.");
                 return;
             }
 
             List<Expense> expenses = expenseService.parseExpensesResponse(expensesJsonResponse);
             if (expenses.isEmpty()) {
-                System.out.println("No expenses found to delete.");
+                System.out.println("No expenses found.");
                 return;
             }
 
